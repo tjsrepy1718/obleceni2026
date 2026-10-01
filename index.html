@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>TJ Sokol Řepy – klubový e-shop</title>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,19 +13,23 @@
   <header class="header">
     <div class="header-inner">
       <h1>TJ Sokol Řepy – klubový e-shop</h1>
-      <p>Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.</p>
+
+      <p>
+        Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.
+      </p>
     </div>
   </header>
 
   <main class="layout">
     <section>
       <div class="notice">
-        <b>Jak objednat:</b>
+        <strong>Jak objednat:</strong>
         U každého produktu nastavte velikost, iniciály a množství.
         Produkty vložte do košíku; objednávku odešlete až po vyplnění údajů dole v košíku.
       </div>
 
       <h2 class="section-title">Klubové vybavení</h2>
+
       <div id="products" class="products"></div>
     </section>
 
@@ -31,7 +37,11 @@
       <div class="cart">
         <h2>Košík</h2>
 
-        <div id="cart-items"></div>
+        <div id="cart-items">
+          <div class="cart-empty">
+            Košík je zatím prázdný.
+          </div>
+        </div>
 
         <div class="cart-total">
           <span>Celkem</span>
@@ -42,45 +52,51 @@
           <h3>Údaje k objednávce</h3>
 
           <div class="field">
-            <label>Celé jméno hráče *</label>
-            <input name="playerName" required>
+            <label for="playerName">Celé jméno hráče *</label>
+            <input id="playerName" name="playerName" required>
           </div>
 
           <div class="field">
-            <label>Jméno zákonného zástupce *</label>
-            <input name="guardianName" required>
+            <label for="guardianName">Jméno zákonného zástupce *</label>
+            <input id="guardianName" name="guardianName" required>
           </div>
 
           <div class="field">
-            <label>E-mail pro potvrzení *</label>
-            <input name="email" type="email" required>
+            <label for="email">E-mail pro potvrzení *</label>
+            <input id="email" name="email" type="email" required>
           </div>
 
           <div class="field">
-            <label>Telefon *</label>
-            <input name="phone" type="tel" required>
+            <label for="phone">Telefon *</label>
+            <input id="phone" name="phone" type="tel" required>
           </div>
 
           <div class="field">
-            <label>Poznámka</label>
-            <textarea name="note" rows="3"></textarea>
+            <label for="note">Poznámka</label>
+            <textarea id="note" name="note" rows="3"></textarea>
           </div>
 
-          <button type="submit">Závazně odeslat objednávku</button>
-
-          <div id="status" class="status hidden"></div>
+          <button type="submit">
+            Závazně odeslat objednávku
+          </button>
         </form>
+
+        <!-- Musí být mimo formulář.
+             Díky tomu zůstane viditelný i po odeslání a vyprázdnění košíku. -->
+        <div id="status" class="status hidden"></div>
       </div>
     </aside>
   </main>
 
   <footer class="footer">
     <div class="footer-inner">
-      <p>Objednávkový systém TJ Sokol Řepy. Ceny jsou uvedeny v Kč.</p>
+      <p>
+        Objednávkový systém TJ Sokol Řepy. Ceny jsou uvedeny v Kč.
+      </p>
     </div>
   </footer>
 
-  <script src="js/products.js"></script>
-  <script src="js/shop.js"></script>
+  <script src="./js/products.js"></script>
+  <script src="./js/shop.js"></script>
 </body>
 </html>
