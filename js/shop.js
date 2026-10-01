@@ -20,11 +20,7 @@ function escapeHtml(value) {
 function countWords(value) {
   const text = String(value || "").trim();
 
-  if (!text) {
-    return 0;
-  }
-
-  return text.split(/\s+/).filter(Boolean).length;
+  return text ? text.split(/\s+/).filter(Boolean).length : 0;
 }
 
 function countDigits(value) {
@@ -45,6 +41,33 @@ function calculateUnitPrice(product, extraName, extraNumber) {
 
 function createCartId() {
   return Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+function openOrderDialog(title, content, canClose) {
+  const dialog = document.getElementById("order-dialog");
+  const titleElement = document.getElementById("order-dialog-title");
+  const contentElement = document.getElementById("order-dialog-content");
+  const closeButton = document.getElementById("order-dialog-close");
+
+  if (!dialog || !titleElement || !contentElement || !closeButton) {
+    return;
+  }
+
+  titleElement.textContent = title;
+  contentElement.innerHTML = content;
+  closeButton.style.display = canClose ? "block" : "none";
+
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+}
+
+function closeOrderDialog() {
+  const dialog = document.getElementById("order-dialog");
+
+  if (dialog && dialog.open) {
+    dialog.close();
+  }
 }
 
 function renderProducts() {
@@ -101,10 +124,8 @@ function renderProducts() {
       `;
     }
 
-    let extraNameField = "";
-
-    if (product.extraName) {
-      extraNameField = `
+    const extraNameField = product.extraName
+      ? `
         <div class="field">
           <label>
             Jméno navíc
@@ -117,13 +138,11 @@ function renderProducts() {
             placeholder="Nepovinné"
           >
         </div>
-      `;
-    }
+      `
+      : "";
 
-    let extraNumberField = "";
-
-    if (product.extraNumber) {
-      extraNumberField = `
+    const extraNumberField = product.extraNumber
+      ? `
         <div class="field">
           <label>
             Číslo navíc
@@ -138,8 +157,8 @@ function renderProducts() {
             placeholder="Nepovinné"
           >
         </div>
-      `;
-    }
+      `
+      : "";
 
     html += `
       <article class="product-card" data-product-id="${product.id}">
@@ -287,12 +306,20 @@ function addToCart(product, card) {
   );
 
   if (product.sizeRequired && !size) {
-    alert("Vyberte velikost produktu: " + product.name);
+    openOrderDialog(
+      "Chybí velikost",
+      `<p>Vyberte velikost produktu <strong>${escapeHtml(product.name)}</strong>.</p>`,
+      true
+    );
     return;
   }
 
   if (!initials) {
-    alert("Doplňte iniciály produktu: " + product.name);
+    openOrderDialog(
+      "Chybí iniciály",
+      `<p>Doplňte iniciály produktu <strong>${escapeHtml(product.name)}</strong>.</p>`,
+      true
+    );
     return;
   }
 
@@ -316,7 +343,6 @@ function addToCart(product, card) {
     lineTotal: unitPrice * quantity
   });
 
-  clearStatus();
   renderCart();
 
   if (sizeSelect) {
@@ -429,37 +455,16 @@ function renderCart() {
   });
 }
 
-function clearStatus() {
-  const status = document.getElementById("status");
-
-  if (!status) {
-    return;
-  }
-
-  status.className = "status hidden";
-  status.innerHTML = "";
-}
-
-function showStatus(type, html) {
-  const status = document.getElementById("status");
-
-  if (!status) {
-    return;
-  }
-
-  status.className = "status " + type;
-  status.innerHTML = html;
-}
-
 async function submitOrder(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
 
   if (cart.length === 0) {
-    showStatus(
-      "error",
-      "<strong>Košík je prázdný.</strong>"
+    openOrderDialog(
+      "Košík je prázdný",
+      "<p>Nejdříve vložte do košíku alespoň jeden produkt.</p>",
+      true
     );
     return;
   }
@@ -472,9 +477,10 @@ async function submitOrder(event) {
     !APP_CONFIG.apiUrl ||
     APP_CONFIG.apiUrl === "DOPLNTE_URL_GOOGLE_APPS_SCRIPT_WEB_APP"
   ) {
-    showStatus(
-      "error",
-      "<strong>E-shop ještě není připojený k objednávkovému systému.</strong>"
+    openOrderDialog(
+      "E-shop není připojený",
+      "<p>Objednávkový systém zatím není připojený ke Google Sheets.</p>",
+      true
     );
     return;
   }
@@ -516,9 +522,13 @@ async function submitOrder(event) {
   submitButton.disabled = true;
   submitButton.textContent = "Odesílám objednávku…";
 
-  showStatus(
-    "sending",
-    "Objednávka se odesílá. Počkejte prosím…"
+  openOrderDialog(
+    "Odesílám objednávku",
+    `
+      <p><strong>Objednávka se právě odesílá.</strong></p>
+      <p>Počkejte prosím na potvrzení. Toto okno nelze zavřít, dokud nebude objednávka zpracována.</p>
+    `,
+    false
   );
 
   try {
@@ -544,36 +554,41 @@ async function submitOrder(event) {
       );
     }
 
-    /*
-      Potvrzení vytvoříme dřív, než schováme objednávkový formulář.
-      Status je mimo formulář, proto zůstane viditelný.
-    */
-    showStatus(
-      "ok",
-      `
-        <strong>Objednávka byla úspěšně přijata.</strong><br>
-        Číslo objednávky: <strong>${escapeHtml(result.orderId)}</strong><br>
-        Potvrzení bylo odesláno na:
-        <strong>${escapeHtml(payload.email)}</strong>
-      `
-    );
-
     cart = [];
     renderCart();
     form.reset();
 
-    document.getElementById("status").scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
+    openOrderDialog(
+      "Objednávka byla přijata",
+      `
+        <p><strong>Objednávka byla úspěšně přijata.</strong></p>
+
+        <p>
+          Číslo objednávky:
+          <strong>${escapeHtml(result.orderId)}</strong>
+        </p>
+
+        <p>
+          Potvrzení bylo odesláno na e-mail:
+          <strong>${escapeHtml(payload.email)}</strong>
+        </p>
+      `,
+      true
+    );
   } catch (error) {
-    showStatus(
-      "error",
+    openOrderDialog(
+      "Objednávku se nepodařilo odeslat",
       `
-        <strong>Objednávku se nepodařilo odeslat.</strong><br>
-        ${escapeHtml(error.message)}<br>
-        Položky zůstaly v košíku. Zkuste to prosím znovu.
-      `
+        <p><strong>Objednávku se nepodařilo uložit.</strong></p>
+
+        <p>${escapeHtml(error.message)}</p>
+
+        <p>
+          Položky zůstaly v košíku. Zavřete toto okno, ověřte připojení
+          a zkuste objednávku odeslat znovu.
+        </p>
+      `,
+      true
     );
   } finally {
     submitButton.disabled = false;
@@ -586,8 +601,29 @@ document.addEventListener("DOMContentLoaded", function () {
   renderCart();
 
   const checkout = document.getElementById("checkout");
+  const closeButton = document.getElementById("order-dialog-close");
+  const dialog = document.getElementById("order-dialog");
 
   if (checkout) {
     checkout.addEventListener("submit", submitOrder);
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener("click", closeOrderDialog);
+  }
+
+  if (dialog) {
+    /*
+      Brání zavření klávesou Escape během odesílání,
+      tedy když je skryté tlačítko Rozumím.
+    */
+    dialog.addEventListener("cancel", function (event) {
+      const closeButtonVisible =
+        document.getElementById("order-dialog-close").style.display !== "none";
+
+      if (!closeButtonVisible) {
+        event.preventDefault();
+      }
+    });
   }
 });
