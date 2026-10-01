@@ -1,3 +1,4 @@
+alert("shop.js se načetl");
 let cart = [];
 
 function money(value) {
