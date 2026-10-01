@@ -201,11 +201,13 @@ function addToCart(product, card) {
     extraNumber
   );
 
-  cart.push({
-    id: `${Date.now()}-${Math.random()}`,
-    product: product.name,
-    size: size,
-    initials: initials,
+ cart.push({
+  id: `${Date.now()}-${Math.random()}`,
+  productId: product.id,
+  product: product.name,
+  brand: product.brand,
+  size: size,
+  initials: initials,
     extraName: extraName,
     extraNumber: extraNumber,
     quantity: quantity,
@@ -297,7 +299,98 @@ function renderCart() {
   });
 }
 
+function setStatus(type, message) {
+  const statusElement = document.getElementById("status");
+
+  statusElement.className = `status ${type}`;
+  statusElement.textContent = message;
+}
+
+async function submitOrder(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+
+  if (cart.length === 0) {
+    return;
+  }
+
+  if (!form.reportValidity()) {
+    return;
+  }
+
+  const orderTotal = cart.reduce((sum, item) => {
+    return sum + item.total;
+  }, 0);
+
+  const payload = {
+    playerName: form.playerName.value.trim(),
+    guardianName: form.guardianName.value.trim(),
+    email: form.email.value.trim(),
+    phone: form.phone.value.trim(),
+    note: form.note.value.trim(),
+    orderTotal: orderTotal,
+
+    items: cart.map(item => ({
+      productId: item.productId || "",
+      product: item.product,
+      brand: item.brand || "",
+      size: item.size,
+      initials: item.initials,
+      extraName: item.extraName,
+      extraNumber: item.extraNumber,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.total
+    }))
+  };
+
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Odesílám objednávku…";
+
+  try {
+    const response = await fetch(APP_CONFIG.apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(
+        result.error || "Objednávku se nepodařilo uložit."
+      );
+    }
+
+    setStatus(
+      "ok",
+      `Objednávka byla přijata. Číslo objednávky: ${result.orderId}. Potvrzení bylo odesláno na ${payload.email}.`
+    );
+
+    cart = [];
+    renderCart();
+    form.reset();
+  } catch (error) {
+    setStatus(
+      "error",
+      `Objednávku se nepodařilo odeslat: ${error.message}`
+    );
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Závazně odeslat objednávku";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   renderCart();
+
+  document
+    .getElementById("checkout")
+    .addEventListener("submit", submitOrder);
 });
