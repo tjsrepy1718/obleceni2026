@@ -254,3 +254,241 @@ function addToCart(product, card) {
   cart.push({
     id: cartId(),
     productId: product.id,
+    product: product.name,
+    brand: product.brand,
+    size: size,
+    initials: initials,
+    extraName: extraName,
+    extraNumber: extraNumber,
+    quantity: quantity,
+    unitPrice: unitPrice,
+    lineTotal: unitPrice * quantity
+  });
+
+  renderCart();
+
+  if (sizeSelect) {
+    sizeSelect.value = "";
+  }
+
+  initialsInput.value = "";
+
+  if (extraNameInput) {
+    extraNameInput.value = "";
+  }
+
+  if (extraNumberInput) {
+    extraNumberInput.value = "";
+  }
+
+  quantityInput.value = 1;
+
+  card.querySelector(".line-price").textContent = money(
+    product.basePrice
+  );
+}
+
+function renderCart() {
+  const cartItems = document.getElementById("cart-items");
+  const cartTotal = document.getElementById("cart-total");
+  const checkout = document.getElementById("checkout");
+
+  if (!cartItems || !cartTotal || !checkout) {
+    return;
+  }
+
+  let total = 0;
+
+  cart.forEach(item => {
+    total += item.lineTotal;
+  });
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = `
+      <div class="cart-empty">
+        Košík je zatím prázdný.
+      </div>
+    `;
+  } else {
+    let html = "";
+
+    cart.forEach(item => {
+      const details = [];
+
+      if (item.size) {
+        details.push("Velikost: " + escapeHtml(item.size));
+      }
+
+      details.push("Iniciály: " + escapeHtml(item.initials));
+
+      if (item.extraName) {
+        details.push("Jméno: " + escapeHtml(item.extraName));
+      }
+
+      if (item.extraNumber) {
+        details.push("Číslo: " + escapeHtml(item.extraNumber));
+      }
+
+      html += `
+        <div class="cart-item">
+          <div class="cart-name">
+            ${escapeHtml(item.product)}
+          </div>
+
+          <div class="cart-meta">
+            ${details.join(" · ")}
+          </div>
+
+          <div class="cart-meta">
+            ${item.quantity}× ${money(item.unitPrice)}
+            = <strong>${money(item.lineTotal)}</strong>
+          </div>
+
+          <button
+            type="button"
+            class="remove-item"
+            data-id="${item.id}"
+          >
+            Odebrat
+          </button>
+        </div>
+      `;
+    });
+
+    cartItems.innerHTML = html;
+  }
+
+  cartTotal.textContent = money(total);
+
+  if (cart.length > 0) {
+    checkout.classList.remove("hidden");
+  } else {
+    checkout.classList.add("hidden");
+  }
+
+  document.querySelectorAll(".remove-item").forEach(button => {
+    button.addEventListener("click", function () {
+      cart = cart.filter(item => {
+        return item.id !== button.dataset.id;
+      });
+
+      renderCart();
+    });
+  });
+}
+
+function showStatus(type, message) {
+  const status = document.getElementById("status");
+
+  if (!status) {
+    return;
+  }
+
+  status.className = "status " + type;
+  status.innerHTML = message;
+}
+
+async function submitOrder(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+
+  if (cart.length === 0) {
+    showStatus("error", "<strong>Košík je prázdný.</strong>");
+    return;
+  }
+
+  if (!form.reportValidity()) {
+    return;
+  }
+
+  const button = form.querySelector('button[type="submit"]');
+
+  let orderTotal = 0;
+
+  cart.forEach(item => {
+    orderTotal += item.lineTotal;
+  });
+
+  const payload = {
+    playerName: form.playerName.value.trim(),
+    guardianName: form.guardianName.value.trim(),
+    email: form.email.value.trim(),
+    phone: form.phone.value.trim(),
+    note: form.note.value.trim(),
+    orderTotal: orderTotal,
+    items: cart
+  };
+
+  button.disabled = true;
+  button.textContent = "Odesílám objednávku…";
+
+  showStatus(
+    "sending",
+    "Objednávka se odesílá. Počkejte prosím…"
+  );
+
+  try {
+    const response = await fetch(APP_CONFIG.apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error("Server vrátil chybu HTTP " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(
+        result.error || "Objednávku se nepodařilo uložit."
+      );
+    }
+
+    cart = [];
+    renderCart();
+    form.reset();
+
+    showStatus(
+      "ok",
+      `
+        <strong>Objednávka byla úspěšně přijata.</strong><br>
+        Číslo objednávky: <strong>${escapeHtml(result.orderId)}</strong><br>
+        Potvrzení bylo odesláno na:
+        <strong>${escapeHtml(payload.email)}</strong>
+      `
+    );
+
+    document.getElementById("status").scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  } catch (error) {
+    showStatus(
+      "error",
+      `
+        <strong>Objednávku se nepodařilo odeslat.</strong><br>
+        ${escapeHtml(error.message)}<br>
+        Položky zůstaly v košíku. Zkuste to prosím znovu.
+      `
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Závazně odeslat objednávku";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  renderProducts();
+  renderCart();
+
+  const checkout = document.getElementById("checkout");
+
+  if (checkout) {
+    checkout.addEventListener("submit", submitOrder);
+  }
+});
