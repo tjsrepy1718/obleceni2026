@@ -1,5 +1,3 @@
-document.getElementById("products").innerHTML =
-  "<h2 style='color:red'>JavaScript funguje</h2>";
 let cart = [];
 
 function money(value) {
