@@ -4,7 +4,7 @@ const PRODUCTS = [
     name: "Triko tmavě zelené",
     brand: "JAKO",
     basePrice: 350,
-    image: "assets/products/triko-jako.png",
+    image: "assets/products/triko-jako.jpg",
     description:
       "Cena včetně potisku TJ Sokol Řepy na zádech, loga klubu na srdci a iniciálů.",
     sizes: [
@@ -31,7 +31,7 @@ const PRODUCTS = [
     name: "Trenky černé",
     brand: "JAKO",
     basePrice: 320,
-    image: "assets/products/trenky-jako.png",
+    image: "assets/products/trenky-jako.jpg",
     description: "Cena včetně potisku loga klubu a iniciálů.",
     sizes: [
       "116",
@@ -57,7 +57,7 @@ const PRODUCTS = [
     name: "Šustka",
     brand: "JAKO",
     basePrice: 800,
-    image: "assets/products/sustka-jako.png",
+    image: "assets/products/sustka-jako.jpg",
     description:
       "Cena včetně potisku TJ Sokol Řepy na zádech, loga klubu na srdci a iniciálů.",
     sizes: [
@@ -84,7 +84,7 @@ const PRODUCTS = [
     name: "Batoh",
     brand: "JAKO",
     basePrice: 580,
-    image: "assets/products/batoh-jako.png",
+    image: "assets/products/batoh-jako.jpg",
     description: "Cena včetně potisku loga klubu a iniciálů.",
     sizes: [],
     sizeRequired: false,
@@ -97,7 +97,7 @@ const PRODUCTS = [
     name: "Mikina",
     brand: "JOMA",
     basePrice: 702,
-    image: "assets/products/mikina-joma.png",
+    image: "assets/products/mikina-joma.jpg",
     description:
       "Cena včetně potisku TJ Sokol Řepy na zádech, loga klubu na srdci a iniciálů.",
     sizes: [
@@ -123,7 +123,7 @@ const PRODUCTS = [
     name: "Dres světlezelený + trenky",
     brand: "JOMA",
     basePrice: 561,
-    image: "assets/products/dres-trenky-joma.png",
+    image: "assets/products/dres-trenky-joma.jpg",
     description: "Cena včetně potisku 2× loga klubu a 2× iniciálů.",
     sizes: [
       "6XS/106",
