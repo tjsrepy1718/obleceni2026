@@ -9,7 +9,7 @@ function money(value) {
 }
 
 function escapeHtml(value) {
-  return String(value ?? "")
+  return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -20,7 +20,11 @@ function escapeHtml(value) {
 function countWords(value) {
   const text = String(value || "").trim();
 
-  return text ? text.split(/\s+/).filter(Boolean).length : 0;
+  if (!text) {
+    return 0;
+  }
+
+  return text.split(/\s+/).filter(Boolean).length;
 }
 
 function countDigits(value) {
@@ -28,19 +32,19 @@ function countDigits(value) {
 }
 
 function calculateUnitPrice(product, extraName, extraNumber) {
-  const extraNamePrice = product.extraName
+  const nameExtra = product.extraName
     ? countWords(extraName) * 70
     : 0;
 
-  const extraNumberPrice = product.extraNumber
+  const numberExtra = product.extraNumber
     ? countDigits(extraNumber) * 60
     : 0;
 
-  return product.basePrice + extraNamePrice + extraNumberPrice;
+  return product.basePrice + nameExtra + numberExtra;
 }
 
-function createCartItemId() {
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+function cartId() {
+  return Date.now() + "-" + Math.random().toString(16).slice(2);
 }
 
 function renderProducts() {
@@ -50,56 +54,50 @@ function renderProducts() {
     return;
   }
 
-  container.innerHTML = PRODUCTS.map(product => {
-    const sizeField = product.sizeRequired
-      ? `
+  let html = "";
+
+  PRODUCTS.forEach(product => {
+    let sizeOptions = "";
+
+    product.sizes.forEach(size => {
+      sizeOptions += `
+        <option value="${escapeHtml(size)}">
+          ${escapeHtml(size)}
+        </option>
+      `;
+    });
+
+    let sizeField = "";
+
+    if (product.sizeRequired) {
+      sizeField = `
         <div class="field">
           <label>Velikost *</label>
-
           <select class="size">
             <option value="">Vyberte velikost</option>
-
-            ${product.sizes.map(size => `
-              <option value="${escapeHtml(size)}">
-                ${escapeHtml(size)}
-              </option>
-            `).join("")}
+            ${sizeOptions}
           </select>
-
-          <small class="size-guide">
-            <a
-              href="${product.brand === "JAKO"
-                ? APP_CONFIG.jakoSizeGuide
-                : APP_CONFIG.jomaSizeGuide}"
-              target="_blank"
-              rel="noopener"
-            >
-              Tabulka velikostí ${product.brand}
-            </a>
-          </small>
         </div>
-      `
-      : "";
+      `;
+    }
 
-    const extraNameField = product.extraName
-      ? `
+    let nameField = "";
+
+    if (product.extraName) {
+      nameField = `
         <div class="field">
           <label>Jméno navíc <small>(+70 Kč za slovo)</small></label>
-
-          <input
-            class="extra-name"
-            type="text"
-            placeholder="Nepovinné"
-          >
+          <input class="extra-name" type="text" placeholder="Nepovinné">
         </div>
-      `
-      : "";
+      `;
+    }
 
-    const extraNumberField = product.extraNumber
-      ? `
+    let numberField = "";
+
+    if (product.extraNumber) {
+      numberField = `
         <div class="field">
           <label>Číslo navíc <small>(+60 Kč za cifru)</small></label>
-
           <input
             class="extra-number"
             type="text"
@@ -108,10 +106,10 @@ function renderProducts() {
             placeholder="Nepovinné"
           >
         </div>
-      `
-      : "";
+      `;
+    }
 
-    return `
+    html += `
       <article class="product-card" data-product-id="${product.id}">
         <img
           class="product-image"
@@ -137,23 +135,20 @@ function renderProducts() {
 
           <div class="field">
             <label>Iniciály *</label>
-
             <input
               class="initials"
               type="text"
               maxlength="5"
               placeholder="Např. FB"
-              autocomplete="off"
             >
           </div>
 
-          ${extraNameField}
-          ${extraNumberField}
+          ${nameField}
+          ${numberField}
 
           <div class="two-col">
             <div class="field">
               <label>Množství *</label>
-
               <div class="quantity">
                 <input
                   class="quantity-input"
@@ -167,7 +162,6 @@ function renderProducts() {
 
             <div class="field">
               <label>Cena položky</label>
-
               <div class="price-preview">
                 <span class="line-price">
                   ${money(product.basePrice)}
@@ -182,67 +176,72 @@ function renderProducts() {
         </div>
       </article>
     `;
-  }).join("");
+  });
+
+  container.innerHTML = html;
 
   document.querySelectorAll(".product-card").forEach(card => {
-    const product = PRODUCTS.find(
-      item => item.id === card.dataset.productId
-    );
+    const product = PRODUCTS.find(item => {
+      return item.id === card.dataset.productId;
+    });
 
-    const updateCardPrice = () => {
-      const extraName = card.querySelector(".extra-name")?.value || "";
-      const extraNumber = card.querySelector(".extra-number")?.value || "";
+    const updatePrice = function () {
+      const nameInput = card.querySelector(".extra-name");
+      const numberInput = card.querySelector(".extra-number");
+      const quantityInput = card.querySelector(".quantity-input");
+
+      const extraName = nameInput ? nameInput.value : "";
+      const extraNumber = numberInput ? numberInput.value : "";
       const quantity = Math.max(
         1,
-        Number(card.querySelector(".quantity-input").value) || 1
+        Number(quantityInput.value) || 1
       );
 
-      const unitPrice = calculateUnitPrice(
+      const itemPrice = calculateUnitPrice(
         product,
         extraName,
         extraNumber
       );
 
       card.querySelector(".line-price").textContent = money(
-        unitPrice * quantity
+        itemPrice * quantity
       );
     };
 
     card.querySelectorAll("input, select").forEach(input => {
-      input.addEventListener("input", updateCardPrice);
-      input.addEventListener("change", updateCardPrice);
+      input.addEventListener("input", updatePrice);
+      input.addEventListener("change", updatePrice);
     });
 
-    card.querySelector(".add-to-cart").addEventListener("click", () => {
-      addToCart(product, card);
-    });
+    card.querySelector(".add-to-cart").addEventListener(
+      "click",
+      function () {
+        addToCart(product, card);
+      }
+    );
   });
 }
 
 function addToCart(product, card) {
-  const size = card.querySelector(".size")?.value || "";
-  const initials = card.querySelector(".initials").value
-    .trim()
-    .toUpperCase();
+  const sizeSelect = card.querySelector(".size");
+  const initialsInput = card.querySelector(".initials");
+  const extraNameInput = card.querySelector(".extra-name");
+  const extraNumberInput = card.querySelector(".extra-number");
+  const quantityInput = card.querySelector(".quantity-input");
 
-  const extraName = card.querySelector(".extra-name")?.value
-    .trim() || "";
-
-  const extraNumber = card.querySelector(".extra-number")?.value
-    .trim() || "";
-
-  const quantity = Math.max(
-    1,
-    Number(card.querySelector(".quantity-input").value) || 1
-  );
+  const size = sizeSelect ? sizeSelect.value : "";
+  const initials = initialsInput.value.trim().toUpperCase();
+  const extraName = extraNameInput ? extraNameInput.value.trim() : "";
+  const extraNumber = extraNumberInput ? extraNumberInput.value.trim() : "";
+  const quantity = Math.max(1, Number(quantityInput.value) || 1);
 
   if (product.sizeRequired && !size) {
-    alert(`Vyberte velikost produktu: ${product.name}`);
+    alert("Vyberte velikost produktu: " + product.name);
     return;
   }
 
   if (!initials) {
-    alert(`Doplňte iniciály produktu: ${product.name}`);
+    alert("Doplňte iniciály produktu: " + product.name);
     return;
   }
 
@@ -253,196 +252,5 @@ function addToCart(product, card) {
   );
 
   cart.push({
-    cartItemId: createCartItemId(),
+    id: cartId(),
     productId: product.id,
-    product: product.name,
-    brand: product.brand,
-    size: size,
-    initials: initials,
-    extraName: extraName,
-    extraNumber: extraNumber,
-    quantity: quantity,
-    unitPrice: unitPrice,
-    lineTotal: unitPrice * quantity
-  });
-
-  renderCart();
-  resetProductCard(card, product);
-}
-
-function resetProductCard(card, product) {
-  const sizeField = card.querySelector(".size");
-  const initialsField = card.querySelector(".initials");
-  const extraNameField = card.querySelector(".extra-name");
-  const extraNumberField = card.querySelector(".extra-number");
-  const quantityField = card.querySelector(".quantity-input");
-
-  if (sizeField) {
-    sizeField.value = "";
-  }
-
-  initialsField.value = "";
-
-  if (extraNameField) {
-    extraNameField.value = "";
-  }
-
-  if (extraNumberField) {
-    extraNumberField.value = "";
-  }
-
-  quantityField.value = 1;
-
-  card.querySelector(".line-price").textContent = money(
-    product.basePrice
-  );
-}
-
-function renderCart() {
-  const cartItemsElement = document.getElementById("cart-items");
-  const cartTotalElement = document.getElementById("cart-total");
-  const checkoutForm = document.getElementById("checkout");
-
-  if (!cartItemsElement || !cartTotalElement || !checkoutForm) {
-    return;
-  }
-
-  const total = cart.reduce((sum, item) => {
-    return sum + item.lineTotal;
-  }, 0);
-
-  if (cart.length === 0) {
-    cartItemsElement.innerHTML = `
-      <div class="cart-empty">
-        Košík je zatím prázdný.
-      </div>
-    `;
-  } else {
-    cartItemsElement.innerHTML = cart.map(item => {
-      const details = [
-        item.size ? `Velikost: ${escapeHtml(item.size)}` : "",
-        `Iniciály: ${escapeHtml(item.initials)}`,
-        item.extraName
-          ? `Jméno: ${escapeHtml(item.extraName)}`
-          : "",
-        item.extraNumber
-          ? `Číslo: ${escapeHtml(item.extraNumber)}`
-          : ""
-      ].filter(Boolean).join(" · ");
-
-      return `
-        <div class="cart-item">
-          <div class="cart-name">
-            ${escapeHtml(item.product)}
-          </div>
-
-          <div class="cart-meta">
-            ${details}
-          </div>
-
-          <div class="cart-meta">
-            ${item.quantity}× ${money(item.unitPrice)}
-            = <strong>${money(item.lineTotal)}</strong>
-          </div>
-
-          <button
-            type="button"
-            class="remove-item"
-            data-cart-item-id="${item.cartItemId}"
-          >
-            Odebrat
-          </button>
-        </div>
-      `;
-    }).join("");
-  }
-
-  cartTotalElement.textContent = money(total);
-
-  if (cart.length > 0) {
-    checkoutForm.classList.remove("hidden");
-  } else {
-    checkoutForm.classList.add("hidden");
-  }
-
-  document.querySelectorAll(".remove-item").forEach(button => {
-    button.addEventListener("click", () => {
-      cart = cart.filter(item => {
-        return item.cartItemId !== button.dataset.cartItemId;
-      });
-
-      renderCart();
-    });
-  });
-}
-
-function showStatus(type, message) {
-  const statusElement = document.getElementById("status");
-
-  if (!statusElement) {
-    return;
-  }
-
-  statusElement.className = `status ${type}`;
-  statusElement.innerHTML = message;
-}
-
-async function submitOrder(event) {
-  event.preventDefault();
-
-  const form = event.currentTarget;
-
-  if (cart.length === 0) {
-    showStatus(
-      "error",
-      "<strong>Košík je prázdný.</strong>"
-    );
-    return;
-  }
-
-  if (!form.reportValidity()) {
-    return;
-  }
-
-  if (
-    !APP_CONFIG.apiUrl ||
-    APP_CONFIG.apiUrl === "DOPLNTE_URL_GOOGLE_APPS_SCRIPT_WEB_APP"
-  ) {
-    showStatus(
-      "error",
-      "<strong>E-shop ještě není připojený k objednávkovému systému.</strong>"
-    );
-    return;
-  }
-
-  const orderTotal = cart.reduce((sum, item) => {
-    return sum + item.lineTotal;
-  }, 0);
-
-  const payload = {
-    playerName: form.playerName.value.trim(),
-    guardianName: form.guardianName.value.trim(),
-    email: form.email.value.trim(),
-    phone: form.phone.value.trim(),
-    note: form.note.value.trim(),
-    orderTotal: orderTotal,
-
-    items: cart.map(item => ({
-      productId: item.productId,
-      product: item.product,
-      brand: item.brand,
-      size: item.size,
-      initials: item.initials,
-      extraName: item.extraName,
-      extraNumber: item.extraNumber,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      lineTotal: item.lineTotal
-    }))
-  };
-
-  const submitButton = form.querySelector(
-    'button[type="submit"]'
-  );
-
-  submitButton.disabled = true;
