@@ -145,7 +145,7 @@ const PRODUCTS = [
 ];
 
 const APP_CONFIG = {
-  apiUrl: "DOPLNTE_URL_GOOGLE_APPS_SCRIPT_WEB_APP",
+  apiUrl: "https://script.google.com/macros/s/AKfycbxn3DlR23VGm4LkYuQRyBwuwnlJIGvEZavg6tR8k4bjdBW8vX3GiToSixLn_oG-kbVw/exec",
 
   jakoSizeGuide:
     "https://www.jako-sport.cz/info/tabulka-velikosti",
