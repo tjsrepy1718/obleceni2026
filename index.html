@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TJ Sokol Řepy – klubový e-shop</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1>TJ Sokol Řepy – klubový e-shop</h1>
+      <p>Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section>
+      <div class="notice">
+        <b>Jak objednat:</b>
+        U každého produktu nastavte velikost, iniciály a množství.
+        Produkty vložte do košíku; objednávku odešlete až po vyplnění údajů dole v košíku.
+      </div>
+
+      <h2 class="section-title">Klubové vybavení</h2>
+      <div id="products" class="products"></div>
+    </section>
+
+    <aside class="cart-wrap">
+      <div class="cart">
+        <h2>Košík</h2>
+
+        <div id="cart-items"></div>
+
+        <div class="cart-total">
+          <span>Celkem</span>
+          <span id="cart-total">0 Kč</span>
+        </div>
+
+        <form id="checkout" class="customer hidden">
+          <h3>Údaje k objednávce</h3>
+
+          <div class="field">
+            <label>Celé jméno hráče *</label>
+            <input name="playerName" required>
+          </div>
+
+          <div class="field">
+            <label>Jméno zákonného zástupce *</label>
+            <input name="guardianName" required>
+          </div>
+
+          <div class="field">
+            <label>E-mail pro potvrzení *</label>
+            <input name="email" type="email" required>
+          </div>
+
+          <div class="field">
+            <label>Telefon *</label>
+            <input name="phone" type="tel" required>
+          </div>
+
+          <div class="field">
+            <label>Poznámka</label>
+            <textarea name="note" rows="3"></textarea>
+          </div>
+
+          <button type="submit">Závazně odeslat objednávku</button>
+
+          <div id="status" class="status hidden"></div>
+        </form>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>Objednávkový systém TJ Sokol Řepy. Ceny jsou uvedeny v Kč.</p>
+    </div>
+  </footer>
+
+  <script src="js/products.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+</html>
