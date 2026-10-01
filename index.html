@@ -80,10 +80,6 @@
             Závazně odeslat objednávku
           </button>
         </form>
-
-        <!-- Musí být mimo formulář.
-             Díky tomu zůstane viditelný i po odeslání a vyprázdnění košíku. -->
-        <div id="status" class="status hidden"></div>
       </div>
     </aside>
   </main>
@@ -95,6 +91,29 @@
       </p>
     </div>
   </footer>
+
+  <!-- Modální okno: rodič jej musí vědomě zavřít tlačítkem. -->
+  <dialog
+    id="order-dialog"
+    class="order-dialog"
+    aria-labelledby="order-dialog-title"
+    aria-describedby="order-dialog-content"
+    closedby="none"
+  >
+    <div class="dialog-content">
+      <h2 id="order-dialog-title">Informace o objednávce</h2>
+
+      <div id="order-dialog-content"></div>
+
+      <button
+        id="order-dialog-close"
+        type="button"
+        class="dialog-close-button"
+      >
+        Rozumím
+      </button>
+    </div>
+  </dialog>
 
   <script src="./js/products.js"></script>
   <script src="./js/shop.js"></script>
