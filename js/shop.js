@@ -43,14 +43,14 @@ function calculateUnitPrice(product, extraName, extraNumber) {
   return product.basePrice + nameExtra + numberExtra;
 }
 
-function cartId() {
+function createCartId() {
   return Date.now() + "-" + Math.random().toString(16).slice(2);
 }
 
 function renderProducts() {
   const container = document.getElementById("products");
 
-  if (!container) {
+  if (!container || typeof PRODUCTS === "undefined") {
     return;
   }
 
@@ -70,34 +70,66 @@ function renderProducts() {
     let sizeField = "";
 
     if (product.sizeRequired) {
+      const guideUrl = product.brand === "JAKO"
+        ? APP_CONFIG.jakoSizeGuide
+        : APP_CONFIG.jomaSizeGuide;
+
       sizeField = `
         <div class="field">
           <label>Velikost *</label>
+
           <select class="size">
             <option value="">Vyberte velikost</option>
             ${sizeOptions}
           </select>
+
+          ${guideUrl && guideUrl !== "#"
+            ? `
+              <small class="size-guide">
+                <a
+                  href="${guideUrl}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Tabulka velikostí ${escapeHtml(product.brand)}
+                </a>
+              </small>
+            `
+            : ""
+          }
         </div>
       `;
     }
 
-    let nameField = "";
+    let extraNameField = "";
 
     if (product.extraName) {
-      nameField = `
+      extraNameField = `
         <div class="field">
-          <label>Jméno navíc <small>(+70 Kč za slovo)</small></label>
-          <input class="extra-name" type="text" placeholder="Nepovinné">
+          <label>
+            Jméno navíc
+            <small>(+70 Kč za slovo)</small>
+          </label>
+
+          <input
+            class="extra-name"
+            type="text"
+            placeholder="Nepovinné"
+          >
         </div>
       `;
     }
 
-    let numberField = "";
+    let extraNumberField = "";
 
     if (product.extraNumber) {
-      numberField = `
+      extraNumberField = `
         <div class="field">
-          <label>Číslo navíc <small>(+60 Kč za cifru)</small></label>
+          <label>
+            Číslo navíc
+            <small>(+60 Kč za cifru)</small>
+          </label>
+
           <input
             class="extra-number"
             type="text"
@@ -119,8 +151,13 @@ function renderProducts() {
 
         <div class="product-body">
           <div class="product-head">
-            <h3 class="product-title">${escapeHtml(product.name)}</h3>
-            <span class="brand">${escapeHtml(product.brand)}</span>
+            <h3 class="product-title">
+              ${escapeHtml(product.name)}
+            </h3>
+
+            <span class="brand">
+              ${escapeHtml(product.brand)}
+            </span>
           </div>
 
           <div class="base-price">
@@ -135,20 +172,23 @@ function renderProducts() {
 
           <div class="field">
             <label>Iniciály *</label>
+
             <input
               class="initials"
               type="text"
               maxlength="5"
               placeholder="Např. FB"
+              autocomplete="off"
             >
           </div>
 
-          ${nameField}
-          ${numberField}
+          ${extraNameField}
+          ${extraNumberField}
 
           <div class="two-col">
             <div class="field">
               <label>Množství *</label>
+
               <div class="quantity">
                 <input
                   class="quantity-input"
@@ -162,6 +202,7 @@ function renderProducts() {
 
             <div class="field">
               <label>Cena položky</label>
+
               <div class="price-preview">
                 <span class="line-price">
                   ${money(product.basePrice)}
@@ -185,6 +226,10 @@ function renderProducts() {
       return item.id === card.dataset.productId;
     });
 
+    if (!product) {
+      return;
+    }
+
     const updatePrice = function () {
       const nameInput = card.querySelector(".extra-name");
       const numberInput = card.querySelector(".extra-number");
@@ -197,14 +242,14 @@ function renderProducts() {
         Number(quantityInput.value) || 1
       );
 
-      const itemPrice = calculateUnitPrice(
+      const unitPrice = calculateUnitPrice(
         product,
         extraName,
         extraNumber
       );
 
       card.querySelector(".line-price").textContent = money(
-        itemPrice * quantity
+        unitPrice * quantity
       );
     };
 
@@ -232,8 +277,14 @@ function addToCart(product, card) {
   const size = sizeSelect ? sizeSelect.value : "";
   const initials = initialsInput.value.trim().toUpperCase();
   const extraName = extraNameInput ? extraNameInput.value.trim() : "";
-  const extraNumber = extraNumberInput ? extraNumberInput.value.trim() : "";
-  const quantity = Math.max(1, Number(quantityInput.value) || 1);
+  const extraNumber = extraNumberInput
+    ? extraNumberInput.value.trim()
+    : "";
+
+  const quantity = Math.max(
+    1,
+    Number(quantityInput.value) || 1
+  );
 
   if (product.sizeRequired && !size) {
     alert("Vyberte velikost produktu: " + product.name);
@@ -252,7 +303,7 @@ function addToCart(product, card) {
   );
 
   cart.push({
-    id: cartId(),
+    id: createCartId(),
     productId: product.id,
     product: product.name,
     brand: product.brand,
@@ -265,6 +316,7 @@ function addToCart(product, card) {
     lineTotal: unitPrice * quantity
   });
 
+  clearStatus();
   renderCart();
 
   if (sizeSelect) {
@@ -377,7 +429,18 @@ function renderCart() {
   });
 }
 
-function showStatus(type, message) {
+function clearStatus() {
+  const status = document.getElementById("status");
+
+  if (!status) {
+    return;
+  }
+
+  status.className = "status hidden";
+  status.innerHTML = "";
+}
+
+function showStatus(type, html) {
   const status = document.getElementById("status");
 
   if (!status) {
@@ -385,7 +448,7 @@ function showStatus(type, message) {
   }
 
   status.className = "status " + type;
-  status.innerHTML = message;
+  status.innerHTML = html;
 }
 
 async function submitOrder(event) {
@@ -394,7 +457,10 @@ async function submitOrder(event) {
   const form = event.currentTarget;
 
   if (cart.length === 0) {
-    showStatus("error", "<strong>Košík je prázdný.</strong>");
+    showStatus(
+      "error",
+      "<strong>Košík je prázdný.</strong>"
+    );
     return;
   }
 
@@ -402,7 +468,16 @@ async function submitOrder(event) {
     return;
   }
 
-  const button = form.querySelector('button[type="submit"]');
+  if (
+    !APP_CONFIG.apiUrl ||
+    APP_CONFIG.apiUrl === "DOPLNTE_URL_GOOGLE_APPS_SCRIPT_WEB_APP"
+  ) {
+    showStatus(
+      "error",
+      "<strong>E-shop ještě není připojený k objednávkovému systému.</strong>"
+    );
+    return;
+  }
 
   let orderTotal = 0;
 
@@ -417,11 +492,29 @@ async function submitOrder(event) {
     phone: form.phone.value.trim(),
     note: form.note.value.trim(),
     orderTotal: orderTotal,
-    items: cart
+
+    items: cart.map(item => {
+      return {
+        productId: item.productId,
+        product: item.product,
+        brand: item.brand,
+        size: item.size,
+        initials: item.initials,
+        extraName: item.extraName,
+        extraNumber: item.extraNumber,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        lineTotal: item.lineTotal
+      };
+    })
   };
 
-  button.disabled = true;
-  button.textContent = "Odesílám objednávku…";
+  const submitButton = form.querySelector(
+    'button[type="submit"]'
+  );
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Odesílám objednávku…";
 
   showStatus(
     "sending",
@@ -438,7 +531,9 @@ async function submitOrder(event) {
     });
 
     if (!response.ok) {
-      throw new Error("Server vrátil chybu HTTP " + response.status);
+      throw new Error(
+        "Server vrátil chybu HTTP " + response.status
+      );
     }
 
     const result = await response.json();
@@ -449,10 +544,10 @@ async function submitOrder(event) {
       );
     }
 
-    cart = [];
-    renderCart();
-    form.reset();
-
+    /*
+      Potvrzení vytvoříme dřív, než schováme objednávkový formulář.
+      Status je mimo formulář, proto zůstane viditelný.
+    */
     showStatus(
       "ok",
       `
@@ -462,6 +557,10 @@ async function submitOrder(event) {
         <strong>${escapeHtml(payload.email)}</strong>
       `
     );
+
+    cart = [];
+    renderCart();
+    form.reset();
 
     document.getElementById("status").scrollIntoView({
       behavior: "smooth",
@@ -477,8 +576,8 @@ async function submitOrder(event) {
       `
     );
   } finally {
-    button.disabled = false;
-    button.textContent = "Závazně odeslat objednávku";
+    submitButton.disabled = false;
+    submitButton.textContent = "Závazně odeslat objednávku";
   }
 }
 
