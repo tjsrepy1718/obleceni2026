@@ -21,9 +21,9 @@ body {
 }
 
 .header {
-  background: linear-gradient(120deg, var(--dark), var(--green));
-  color: white;
   padding: 32px 20px;
+  color: white;
+  background: linear-gradient(120deg, var(--dark), var(--green));
 }
 
 .header-inner,
@@ -84,6 +84,7 @@ body {
 }
 
 .product-image {
+  display: block;
   width: 100%;
   height: 220px;
   padding: 10px;
@@ -159,6 +160,16 @@ body {
   border-color: var(--green);
 }
 
+.size-guide {
+  display: block;
+  margin-top: 6px;
+}
+
+.size-guide a {
+  color: var(--green);
+  font-size: 0.82rem;
+}
+
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -190,18 +201,26 @@ button {
   font-weight: 750;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: var(--dark);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .cart-wrap {
   position: sticky;
   top: 16px;
   align-self: start;
+  max-height: calc(100vh - 32px);
 }
 
 .cart {
+  max-height: calc(100vh - 32px);
   padding: 19px;
+  overflow-y: auto;
 }
 
 .cart h2 {
@@ -229,6 +248,19 @@ button:hover {
   font-size: 0.84rem;
 }
 
+.remove-item {
+  width: auto;
+  margin-top: 8px;
+  padding: 7px 10px;
+  background: #eef3ef;
+  color: var(--dark);
+  font-size: 0.82rem;
+}
+
+.remove-item:hover {
+  background: #dce8df;
+}
+
 .cart-total {
   display: flex;
   justify-content: space-between;
@@ -244,24 +276,51 @@ button:hover {
   border-top: 1px solid var(--line);
 }
 
-.hidden {
-  display: none !important;
+.customer h3 {
+  margin: 0 0 10px;
+  color: var(--dark);
+}
+
+.customer button[type="submit"] {
+  display: block;
+  min-height: 52px;
+  margin: 14px 0 12px;
+  white-space: normal;
+  line-height: 1.25;
 }
 
 .status {
-  margin-top: 12px;
-  padding: 12px;
+  display: block;
+  margin: 14px 0 4px;
+  padding: 14px;
   border-radius: 10px;
+  line-height: 1.5;
+}
+
+.status.hidden {
+  display: none;
+}
+
+.status.sending {
+  border: 1px solid #ead792;
+  background: #fff8dc;
+  color: #715900;
+}
+
+.status.ok {
+  border: 1px solid #b9dfc0;
+  background: #eaf8ed;
+  color: #17683e;
 }
 
 .status.error {
+  border: 1px solid #f5c2bd;
   background: #fff0ef;
   color: #8f1c13;
 }
 
-.status.ok {
-  background: #eaf8ed;
-  color: #17683e;
+.hidden {
+  display: none !important;
 }
 
 .footer {
@@ -282,6 +341,12 @@ button:hover {
 
   .cart-wrap {
     position: static;
+    max-height: none;
+  }
+
+  .cart {
+    max-height: none;
+    overflow: visible;
   }
 }
 
@@ -300,68 +365,5 @@ button:hover {
 
   .two-col {
     grid-template-columns: 1fr;
-  }
-}
-
-
-/* Košík se na desktopu vejde do výšky obrazovky a v případě potřeby scrolluje. */
-.cart-wrap {
-  position: sticky;
-  top: 16px;
-  align-self: start;
-  max-height: calc(100vh - 32px);
-}
-
-.cart {
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  padding-bottom: 20px;
-}
-
-/* Tlačítko nikdy neusekne dlouhý text. */
-.customer button[type="submit"] {
-  display: block;
-  min-height: 52px;
-  margin: 14px 0 12px;
-  white-space: normal;
-  line-height: 1.25;
-}
-
-/* Stav odeslání objednávky. */
-.status {
-  display: block;
-  margin: 14px 0 4px;
-  padding: 14px;
-  border-radius: 10px;
-  line-height: 1.5;
-}
-
-.status.sending {
-  background: #fff8dc;
-  color: #715900;
-}
-
-.status.ok {
-  background: #eaf8ed;
-  border: 1px solid #b9dfc0;
-  color: #17683e;
-}
-
-.status.error {
-  background: #fff0ef;
-  border: 1px solid #f5c2bd;
-  color: #8f1c13;
-}
-
-/* Na mobilu se košík zobrazuje normálně pod produkty. */
-@media (max-width: 900px) {
-  .cart-wrap {
-    position: static;
-    max-height: none;
-  }
-
-  .cart {
-    max-height: none;
-    overflow: visible;
   }
 }
