@@ -22,8 +22,8 @@ const PRODUCTS = [
       "4XL"
     ],
     sizeRequired: true,
-    extraName: true,
-    extraNumber: true
+    extraName: false,
+    extraNumber: false
   },
 
   {
@@ -32,7 +32,8 @@ const PRODUCTS = [
     brand: "JAKO",
     basePrice: 320,
     image: "assets/products/trenky-jako.jpg",
-    description: "Cena včetně potisku loga klubu a iniciálů.",
+    description:
+      "Cena včetně potisku loga klubu a iniciálů.",
     sizes: [
       "116",
       "128",
@@ -48,8 +49,8 @@ const PRODUCTS = [
       "4XL"
     ],
     sizeRequired: true,
-    extraName: true,
-    extraNumber: true
+    extraName: false,
+    extraNumber: false
   },
 
   {
@@ -75,8 +76,8 @@ const PRODUCTS = [
       "4XL"
     ],
     sizeRequired: true,
-    extraName: true,
-    extraNumber: true
+    extraName: false,
+    extraNumber: false
   },
 
   {
@@ -85,11 +86,12 @@ const PRODUCTS = [
     brand: "JAKO",
     basePrice: 580,
     image: "assets/products/batoh-jako.jpg",
-    description: "Cena včetně potisku loga klubu a iniciálů.",
+    description:
+      "Cena včetně potisku loga klubu a iniciálů.",
     sizes: [],
     sizeRequired: false,
-    extraName: true,
-    extraNumber: true
+    extraName: false,
+    extraNumber: false
   },
 
   {
@@ -124,7 +126,8 @@ const PRODUCTS = [
     brand: "JOMA",
     basePrice: 561,
     image: "assets/products/dres-trenky-joma.jpg",
-    description: "Cena včetně potisku 2× loga klubu a 2× iniciálů.",
+    description:
+      "Cena včetně potisku 2× loga klubu a 2× iniciálů.",
     sizes: [
       "6XS/106",
       "5XS/116",
@@ -145,7 +148,8 @@ const PRODUCTS = [
 ];
 
 const APP_CONFIG = {
-  apiUrl: "https://script.google.com/macros/s/AKfycbxn3DlR23VGm4LkYuQRyBwuwnlJIGvEZavg6tR8k4bjdBW8vX3GiToSixLn_oG-kbVw/exec",
+  apiUrl:
+    "https://script.google.com/macros/s/AKfycbxn3DlR23VGm4LkYuQRyBwuwnlJIGvEZavg6tR8k4bjdBW8vX3GiToSixLn_oG-kbVw/exec",
 
   jakoSizeGuide:
     "https://www.jako-sport.cz/info/tabulka-velikosti",
