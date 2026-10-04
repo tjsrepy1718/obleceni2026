@@ -28,7 +28,7 @@ body {
 /* Hlavička */
 
 .header {
-  padding: 20px;
+  padding: 20px 0 24px;
   color: #ffffff;
   background: linear-gradient(120deg, var(--dark), var(--green));
 }
@@ -36,7 +36,7 @@ body {
 .header-inner,
 .layout,
 .footer-inner {
-  width: min(100% - 40px, 1280px);
+  width: min(calc(100% - 40px), 1280px);
   margin: 0 auto;
 }
 
@@ -104,7 +104,7 @@ body {
   font-size: 0.95rem;
 }
 
-/* Stránkové rozvržení */
+/* Hlavní rozvržení */
 
 .layout {
   display: grid;
@@ -200,7 +200,7 @@ body {
   font-size: 0.88rem;
 }
 
-/* Formulář v produktové kartě */
+/* Ovládací prvky produktů a objednávky */
 
 .field {
   min-width: 0;
@@ -342,191 +342,4 @@ button:disabled {
 .remove-item {
   width: auto;
   margin-top: 8px;
-  padding: 7px 10px;
-  color: var(--dark);
-  background: #eef3ef;
-  font-size: 0.82rem;
-}
-
-.remove-item:hover {
-  background: #dce8df;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  margin: 17px 0;
-  color: var(--dark);
-  font-size: 1.2rem;
-  font-weight: 850;
-}
-
-/* Údaje objednávky */
-
-.customer {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-
-.customer h3 {
-  margin: 0 0 10px;
-  color: var(--dark);
-}
-
-.customer button[type="submit"] {
-  min-height: 52px;
-  margin: 14px 0 0;
-  line-height: 1.25;
-  white-space: normal;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* Stavové zprávy */
-
-.status {
-  display: block;
-  margin: 14px 0 4px;
-  padding: 14px;
-  border-radius: 10px;
-  line-height: 1.5;
-}
-
-.status.hidden {
-  display: none;
-}
-
-.status.sending {
-  border: 1px solid #ead792;
-  color: #715900;
-  background: #fff8dc;
-}
-
-.status.ok {
-  border: 1px solid #b9dfc0;
-  color: #17683e;
-  background: #eaf8ed;
-}
-
-.status.error {
-  border: 1px solid #f5c2bd;
-  color: #8f1c13;
-  background: #fff0ef;
-}
-
-/* Zápatí */
-
-.footer {
-  padding: 24px 20px;
-  color: #cbe5d3;
-  background: var(--dark);
-}
-
-.footer p {
-  margin: 0;
-  font-size: 0.87rem;
-}
-
-/* Dialog s výsledkem objednávky */
-
-.order-dialog {
-  width: min(92vw, 520px);
-  padding: 0;
-  border: 0;
-  border-radius: 16px;
-  color: var(--ink);
-  background: #ffffff;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-}
-
-.order-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.58);
-  backdrop-filter: blur(2px);
-}
-
-.dialog-content {
-  padding: 26px;
-}
-
-.dialog-content h2 {
-  margin: 0 0 15px;
-  color: var(--dark);
-  font-size: 1.45rem;
-}
-
-.dialog-content p {
-  margin: 10px 0;
-}
-
-.dialog-close-button {
-  display: block;
-  width: 100%;
-  min-height: 48px;
-  margin-top: 22px;
-  color: #ffffff;
-  background: var(--green);
-}
-
-/* Tablet a mobil */
-
-@media (max-width: 1050px) {
-  .layout {
-    grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 18px;
-  }
-}
-
-@media (max-width: 850px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .cart-wrap {
-    position: static;
-  }
-}
-
-@media (max-width: 640px) {
-  .header {
-    padding: 16px 0 26px;
-  }
-
-  .header-inner,
-  .layout,
-  .footer-inner {
-    width: min(100% - 28px, 1280px);
-  }
-
-  .shop-navigation {
-    margin-bottom: 18px;
-  }
-
-  .back-link {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .header h1 {
-    font-size: 1.6rem;
-  }
-
-  .products {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 500px) {
-  .two-col {
-    grid-template-columns: 1fr;
-  }
-
-  .quantity input {
-    width: 100%;
-  }
-}
+  padding:
