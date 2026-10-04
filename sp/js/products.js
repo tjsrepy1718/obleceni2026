@@ -149,7 +149,7 @@ const PRODUCTS = [
 
 const APP_CONFIG = {
   apiUrl:
-    "https://script.google.com/macros/s/AKfycbxn3DlR23VGm4LkYuQRyBwuwnlJIGvEZavg6tR8k4bjdBW8vX3GiToSixLn_oG-kbVw/exec",
+    "https://script.google.com/macros/s/AKfycbxe2zX0N-ZjXHuLIM42nIcM20dCAyeVpmy2PWWZmsxHuLiMqOz7ogmr8uXIDu1dbEF3/exec",
 
   jakoSizeGuide:
     "https://www.jako-sport.cz/info/tabulka-velikosti",
