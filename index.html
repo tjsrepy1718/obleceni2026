@@ -4,118 +4,167 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>TJ Sokol Řepy – klubový e-shop</title>
+  <title>TJ Sokol Řepy – objednávka oblečení 2026</title>
 
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --dark: #0d3e26;
+      --green: #17683e;
+      --blue: #16638a;
+      --line: #dce6df;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: grid;
+      min-height: 100vh;
+      margin: 0;
+      padding: 22px;
+      place-items: center;
+      color: #15241c;
+      background:
+        radial-gradient(circle at top left, #cbe9d4 0, transparent 34%),
+        linear-gradient(135deg, #f6faf7, #e4eee7);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    main {
+      width: min(100%, 840px);
+      padding: clamp(28px, 6vw, 58px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 20px 70px rgba(13, 62, 38, 0.16);
+      text-align: center;
+    }
+
+    .club {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 99px;
+      color: var(--dark);
+      background: #e7f4eb;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      color: var(--dark);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.08;
+    }
+
+    p {
+      max-width: 620px;
+      margin: 0 auto 30px;
+      color: #53635a;
+      font-size: 1.08rem;
+    }
+
+    .teams {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .team-card {
+      display: flex;
+      min-height: 215px;
+      padding: 28px;
+      border-radius: 18px;
+      color: white;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.13);
+      text-align: left;
+      text-decoration: none;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .team-card:hover,
+    .team-card:focus-visible {
+      outline: 3px solid #a4d8b4;
+      outline-offset: 3px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .team-card.sp {
+      background: linear-gradient(135deg, var(--dark), var(--green));
+    }
+
+    .team-card.mp {
+      background: linear-gradient(135deg, #103c54, var(--blue));
+    }
+
+    .team-code {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+
+    .team-name {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 850;
+    }
+
+    .team-action {
+      font-weight: 750;
+    }
+
+    .help {
+      margin: 30px 0 0;
+      color: #68776e;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 620px) {
+      .teams {
+        grid-template-columns: 1fr;
+      }
+
+      .team-card {
+        min-height: 165px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <header class="header">
-    <div class="header-inner">
-      <h1>TJ Sokol Řepy – klubový e-shop</h1>
+  <main>
+    <span class="club">TJ Sokol Řepy</span>
 
-      <p>
-        Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.
-      </p>
+    <h1>Objednávka klubového oblečení</h1>
+
+    <p>
+      Vyberte kategorii hráče a pokračujte do správného objednávkového e-shopu.
+    </p>
+
+    <div class="teams">
+      <a class="team-card sp" href="sp/">
+        <span class="team-code">SP</span>
+        <span class="team-name">Starší přípravka</span>
+        <span class="team-action">Otevřít objednávku →</span>
+      </a>
+
+      <a class="team-card mp" href="mp/">
+        <span class="team-code">MP</span>
+        <span class="team-name">Mladší přípravka</span>
+        <span class="team-action">Otevřít objednávku →</span>
+      </a>
     </div>
-  </header>
 
-  <main class="layout">
-    <section>
-      <div class="notice">
-        <strong>Jak objednat:</strong>
-        U každého produktu nastavte velikost, iniciály a množství.
-        Produkty vložte do košíku; objednávku odešlete až po vyplnění údajů dole v košíku.
-      </div>
-
-      <h2 class="section-title">Klubové vybavení</h2>
-
-      <div id="products" class="products"></div>
-    </section>
-
-    <aside class="cart-wrap">
-      <div class="cart">
-        <h2>Košík</h2>
-
-        <div id="cart-items">
-          <div class="cart-empty">
-            Košík je zatím prázdný.
-          </div>
-        </div>
-
-        <div class="cart-total">
-          <span>Celkem</span>
-          <span id="cart-total">0 Kč</span>
-        </div>
-
-        <form id="checkout" class="customer hidden">
-          <h3>Údaje k objednávce</h3>
-
-          <div class="field">
-            <label for="playerName">Celé jméno hráče *</label>
-            <input id="playerName" name="playerName" required>
-          </div>
-
-          <div class="field">
-            <label for="guardianName">Jméno zákonného zástupce *</label>
-            <input id="guardianName" name="guardianName" required>
-          </div>
-
-          <div class="field">
-            <label for="email">E-mail pro potvrzení *</label>
-            <input id="email" name="email" type="email" required>
-          </div>
-
-          <div class="field">
-            <label for="phone">Telefon *</label>
-            <input id="phone" name="phone" type="tel" required>
-          </div>
-
-          <div class="field">
-            <label for="note">Poznámka</label>
-            <textarea id="note" name="note" rows="3"></textarea>
-          </div>
-
-          <button type="submit">
-            Závazně odeslat objednávku
-          </button>
-        </form>
-      </div>
-    </aside>
+    <p class="help">
+      Nejste si jistí, do které přípravky hráč patří?
+      Obraťte se na trenéra své kategorie.
+    </p>
   </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-      <p>
-        Objednávkový systém TJ Sokol Řepy. Ceny jsou uvedeny v Kč.
-      </p>
-    </div>
-  </footer>
-
-  <!-- Modální okno: rodič jej musí vědomě zavřít tlačítkem. -->
-  <dialog
-    id="order-dialog"
-    class="order-dialog"
-    aria-labelledby="order-dialog-title"
-    aria-describedby="order-dialog-content"
-    closedby="none"
-  >
-    <div class="dialog-content">
-      <h2 id="order-dialog-title">Informace o objednávce</h2>
-
-      <div id="order-dialog-content"></div>
-
-      <button
-        id="order-dialog-close"
-        type="button"
-        class="dialog-close-button"
-      >
-        Rozumím
-      </button>
-    </div>
-  </dialog>
-
-  <script src="./js/products.js"></script>
-  <script src="./js/shop.js"></script>
 </body>
 </html>
