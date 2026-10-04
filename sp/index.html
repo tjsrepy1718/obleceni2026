@@ -4,34 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>TJ Sokol Řepy SP – klubový e-shop</title>
+  <title>TJ Sokol Řepy – klubový e-shop SP</title>
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-<header class="hero">
-  <div class="shop-navigation">
-    <a href="../" class="back-link">
-      ← Zpět na výběr kategorie
-    </a>
-  </div>
+  <header class="header">
+    <div class="header-inner">
+      <nav class="shop-navigation" aria-label="Navigace e-shopu">
+        <a href="../" class="back-link">
+          ← Zpět na výběr kategorie
+        </a>
+      </nav>
 
-  <div class="hero-content">
-    <p class="club-label">TJ Sokol Řepy</p>
+      <p class="club-label">TJ Sokol Řepy</p>
 
-    <h1>Klubový e-shop</h1>
+      <h1>Klubový e-shop</h1>
 
-    <p class="team-label">Starší přípravka</p>
+      <p class="team-label">Starší přípravka</p>
 
-    <p class="hero-text">
-      Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.
-    </p>
-  </div>
-</header>
+      <p class="header-description">
+        Vyberte produkty, nastavte varianty a odešlete jednu společnou objednávku.
+      </p>
+    </div>
+  </header>
 
   <main class="layout">
-    <section>
+    <section class="shop-content">
       <div class="notice">
         <strong>Jak objednat:</strong>
         U každého produktu nastavte velikost, iniciály a množství.
@@ -43,7 +43,7 @@
       <div id="products" class="products"></div>
     </section>
 
-    <aside class="cart-wrap">
+    <aside class="cart-wrap" aria-label="Košík a objednávka">
       <div class="cart">
         <h2>Košík</h2>
 
@@ -63,27 +63,55 @@
 
           <div class="field">
             <label for="playerName">Celé jméno hráče *</label>
-            <input id="playerName" name="playerName" required>
+            <input
+              id="playerName"
+              name="playerName"
+              type="text"
+              autocomplete="name"
+              required
+            >
           </div>
 
           <div class="field">
             <label for="guardianName">Jméno zákonného zástupce *</label>
-            <input id="guardianName" name="guardianName" required>
+            <input
+              id="guardianName"
+              name="guardianName"
+              type="text"
+              autocomplete="name"
+              required
+            >
           </div>
 
           <div class="field">
             <label for="email">E-mail pro potvrzení *</label>
-            <input id="email" name="email" type="email" required>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            >
           </div>
 
           <div class="field">
             <label for="phone">Telefon *</label>
-            <input id="phone" name="phone" type="tel" required>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              required
+            >
           </div>
 
           <div class="field">
             <label for="note">Poznámka</label>
-            <textarea id="note" name="note" rows="3"></textarea>
+            <textarea
+              id="note"
+              name="note"
+              rows="3"
+            ></textarea>
           </div>
 
           <button type="submit">
@@ -102,7 +130,6 @@
     </div>
   </footer>
 
-  <!-- Modální okno: rodič jej musí vědomě zavřít tlačítkem. -->
   <dialog
     id="order-dialog"
     class="order-dialog"
@@ -125,7 +152,7 @@
     </div>
   </dialog>
 
-  <script src="./js/products.js"></script>
-  <script src="./js/shop.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/shop.js"></script>
 </body>
 </html>
