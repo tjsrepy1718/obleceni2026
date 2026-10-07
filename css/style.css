@@ -1,10 +1,10 @@
 :root {
-  --green: #17683e;
-  --dark: #0d3e26;
-  --bg: #f3f6f4;
-  --ink: #15241c;
+  --green: #145214;
+  --dark: #082f16;
+  --bg: #f2f6f2;
+  --ink: #14251a;
   --muted: #607067;
-  --line: #dce6df;
+  --line: #d8e4d9;
   --danger: #b42318;
 }
 
@@ -40,7 +40,7 @@ body {
 
 .header p {
   margin: 7px 0 0;
-  color: #dff1e5;
+  color: #e2f3e4;
 }
 
 .layout {
@@ -53,10 +53,10 @@ body {
 .notice {
   margin: 22px 0;
   padding: 12px 15px;
-  border: 1px solid #d5eca7;
+  border: 1px solid #cde4c9;
   border-radius: 12px;
-  background: #f6ffe3;
-  color: #445c09;
+  background: #f3faed;
+  color: #355b27;
 }
 
 .section-title {
@@ -76,7 +76,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 16px;
   background: white;
-  box-shadow: 0 6px 20px rgba(15, 50, 30, 0.06);
+  box-shadow: 0 6px 20px rgba(8, 47, 22, 0.07);
 }
 
 .product-card {
@@ -112,7 +112,7 @@ body {
 .brand {
   padding: 3px 8px;
   border-radius: 20px;
-  background: #e6f3ea;
+  background: #e3f2e5;
   color: var(--dark);
   font-size: 0.75rem;
   font-weight: 700;
@@ -146,17 +146,19 @@ body {
 .field select,
 .field textarea {
   width: 100%;
+  max-width: 100%;
   padding: 10px;
   border: 1px solid #bdc9c0;
   border-radius: 9px;
   background: white;
+  color: var(--ink);
   font: inherit;
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  outline: 3px solid #d9eddf;
+  outline: 3px solid #cce8d1;
   border-color: var(--green);
 }
 
@@ -184,13 +186,14 @@ body {
 .price-preview {
   padding: 10px;
   border-radius: 10px;
-  background: #edf7ef;
+  background: #eaf6ec;
   color: var(--dark);
   font-weight: 800;
 }
 
 button {
   width: 100%;
+  max-width: 100%;
   padding: 11px 14px;
   border: 0;
   border-radius: 10px;
@@ -211,16 +214,14 @@ button:disabled {
 }
 
 .cart-wrap {
-  position: sticky;
-  top: 16px;
+  min-width: 0;
   align-self: start;
-  max-height: calc(100vh - 32px);
 }
 
 .cart {
-  max-height: calc(100vh - 32px);
+  min-width: 0;
   padding: 19px;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .cart h2 {
@@ -252,13 +253,13 @@ button:disabled {
   width: auto;
   margin-top: 8px;
   padding: 7px 10px;
-  background: #eef3ef;
+  background: #ebf3ec;
   color: var(--dark);
   font-size: 0.82rem;
 }
 
 .remove-item:hover {
-  background: #dce8df;
+  background: #d5e7d8;
 }
 
 .cart-total {
@@ -271,6 +272,8 @@ button:disabled {
 }
 
 .customer {
+  width: 100%;
+  max-width: 100%;
   margin-top: 18px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
@@ -326,7 +329,7 @@ button:disabled {
 .footer {
   padding: 24px 20px;
   background: var(--dark);
-  color: #cbe5d3;
+  color: #d4ead7;
 }
 
 .footer p {
@@ -334,41 +337,6 @@ button:disabled {
   font-size: 0.87rem;
 }
 
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .cart-wrap {
-    position: static;
-    max-height: none;
-  }
-
-  .cart {
-    max-height: none;
-    overflow: visible;
-  }
-}
-
-@media (max-width: 500px) {
-  .layout {
-    padding: 0 12px 30px;
-  }
-
-  .header {
-    padding: 24px 14px;
-  }
-
-  .products {
-    grid-template-columns: 1fr;
-  }
-
-  .two-col {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Modální okno s potvrzením objednávky */
 .order-dialog {
   width: min(92vw, 520px);
   padding: 0;
@@ -405,4 +373,60 @@ button:disabled {
   margin-top: 22px;
   background: var(--green);
   color: white;
+}
+
+/* Desktop: košík je vpravo a zůstává při rolování viditelný */
+@media (min-width: 901px) {
+  .cart-wrap {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .cart {
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+}
+
+/* Telefon a tablet: košík je pod produkty a nic nepřekrývá */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-wrap {
+    position: static;
+    width: 100%;
+    max-height: none;
+    margin-top: 6px;
+  }
+
+  .cart {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 500px) {
+  .layout {
+    padding: 0 12px 30px;
+  }
+
+  .header {
+    padding: 24px 14px;
+  }
+
+  .products {
+    grid-template-columns: 1fr;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .quantity input {
+    width: 100%;
+  }
 }
