@@ -154,5 +154,5 @@ const APP_CONFIG = {
   jakoSizeGuide:
     "https://www.jako-sport.cz/info/tabulka-velikosti",
 
-  jomaSizeGuide: "#"
+  jomaSizeGuide: "https://www.joy-sports.cz/tabulka-velikosti/"
 };
